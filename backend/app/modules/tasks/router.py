@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.core.dependencies import get_current_user_id
+from app.core.permissions import require_project_role
 from app.core.responses import envelope
 from app.core.websocket import manager
 from app.modules.tasks.schemas import (
@@ -26,6 +27,7 @@ from app.modules.tasks.service import (
     move_task,
     update_task,
 )
+from app.modules.workspaces.models import WorkspaceRole
 
 router = APIRouter(tags=["tasks"])
 
@@ -34,6 +36,7 @@ router = APIRouter(tags=["tasks"])
 async def create(
     project_id: UUID,
     data: CreateTaskRequest,
+    _member=Depends(require_project_role(WorkspaceRole.MEMBER)),
     user_id: str = Depends(get_current_user_id),
     db: AsyncSession = Depends(get_db),
 ):

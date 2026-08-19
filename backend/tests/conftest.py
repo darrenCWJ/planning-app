@@ -82,3 +82,39 @@ async def auth_headers(client: AsyncClient) -> dict:
     )
     token = resp.json()["data"]["access_token"]
     return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+async def viewer_headers(client: AsyncClient, auth_headers: dict, workspace_id: str) -> dict:
+    """Register a second user and invite them as a viewer."""
+    resp = await client.post(
+        "/api/auth/register",
+        json={
+            "email": "viewer@example.com",
+            "password": "viewerpass",
+            "full_name": "Viewer User",
+        },
+    )
+    token = resp.json()["data"]["access_token"]
+
+    await client.post(
+        f"/api/workspaces/{workspace_id}/members",
+        json={"email": "viewer@example.com", "role": "viewer"},
+        headers=auth_headers,
+    )
+    return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture
+async def outsider_headers(client: AsyncClient) -> dict:
+    """Register a user that belongs to no workspace."""
+    resp = await client.post(
+        "/api/auth/register",
+        json={
+            "email": "outsider@example.com",
+            "password": "outsiderpass",
+            "full_name": "Outsider User",
+        },
+    )
+    token = resp.json()["data"]["access_token"]
+    return {"Authorization": f"Bearer {token}"}
