@@ -22,6 +22,7 @@ from app.core.database import Base  # noqa: E402
 import app.modules.auth.models  # noqa: E402, F401
 import app.modules.workspaces.models  # noqa: E402, F401
 import app.modules.projects.models  # noqa: E402, F401
+import app.modules.tasks.models  # noqa: E402, F401
 
 # Override the sqlalchemy.url from settings (sync URL required for alembic)
 config.set_main_option("sqlalchemy.url", settings.database_url_sync)

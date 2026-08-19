@@ -61,6 +61,16 @@ async def workspace_id(client: AsyncClient, auth_headers: dict) -> str:
 
 
 @pytest.fixture
+async def project_id(client: AsyncClient, auth_headers: dict, workspace_id: str) -> str:
+    resp = await client.post(
+        f"/api/workspaces/{workspace_id}/projects",
+        json={"name": "Test Project", "key": "TP", "description": ""},
+        headers=auth_headers,
+    )
+    return resp.json()["data"]["id"]
+
+
+@pytest.fixture
 async def auth_headers(client: AsyncClient) -> dict:
     resp = await client.post(
         "/api/auth/register",
