@@ -48,3 +48,17 @@ async def client(setup_db: None, db_session: AsyncSession) -> AsyncGenerator[Asy
     ) as ac:
         yield ac
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+async def auth_headers(client: AsyncClient) -> dict:
+    resp = await client.post(
+        "/api/auth/register",
+        json={
+            "email": "fixture@example.com",
+            "password": "testpass123",
+            "full_name": "Fixture User",
+        },
+    )
+    token = resp.json()["data"]["access_token"]
+    return {"Authorization": f"Bearer {token}"}
