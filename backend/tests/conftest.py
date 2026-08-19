@@ -51,6 +51,16 @@ async def client(setup_db: None, db_session: AsyncSession) -> AsyncGenerator[Asy
 
 
 @pytest.fixture
+async def workspace_id(client: AsyncClient, auth_headers: dict) -> str:
+    resp = await client.post(
+        "/api/workspaces",
+        json={"name": "Test WS", "slug": "test-ws"},
+        headers=auth_headers,
+    )
+    return resp.json()["data"]["id"]
+
+
+@pytest.fixture
 async def auth_headers(client: AsyncClient) -> dict:
     resp = await client.post(
         "/api/auth/register",
