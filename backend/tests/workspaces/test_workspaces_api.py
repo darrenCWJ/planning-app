@@ -38,6 +38,11 @@ async def test_create_workspace_requires_auth(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_invite_member(client: AsyncClient, auth_headers: dict):
+    await client.post("/api/auth/register", json={
+        "email": "newmember@example.com",
+        "password": "memberpass123",
+        "full_name": "New Member",
+    })
     create_resp = await client.post(
         "/api/workspaces",
         json={"name": "Invite Test", "slug": "invite-test"},
