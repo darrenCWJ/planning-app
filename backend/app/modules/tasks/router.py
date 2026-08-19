@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
 from app.core.dependencies import get_current_user_id
 from app.core.responses import envelope
+from app.core.websocket import manager
 from app.modules.tasks.schemas import (
     BoardResponse,
     CommentRequest,
@@ -39,7 +40,12 @@ async def create(
     task = await create_task(
         db, project_id, data.title, data.description, data.priority, data.assignee_id, data.due_date
     )
-    return envelope(TaskResponse.model_validate(task).model_dump())
+    task_data = TaskResponse.model_validate(task).model_dump()
+    await manager.broadcast(
+        f"board:{task.project_id}",
+        {"event": "task.created", "data": task_data},
+    )
+    return envelope(task_data)
 
 
 @router.get("/api/projects/{project_id}/tasks")
@@ -86,7 +92,12 @@ async def update(
     task = await update_task(db, task_id, **data.model_dump(exclude_unset=True))
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
-    return envelope(TaskResponse.model_validate(task).model_dump())
+    task_data = TaskResponse.model_validate(task).model_dump()
+    await manager.broadcast(
+        f"board:{task.project_id}",
+        {"event": "task.updated", "data": task_data},
+    )
+    return envelope(task_data)
 
 
 @router.post("/api/tasks/{task_id}/move")
@@ -99,7 +110,12 @@ async def move(
     task = await move_task(db, task_id, data.column_id, data.position)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
-    return envelope(TaskResponse.model_validate(task).model_dump())
+    task_data = TaskResponse.model_validate(task).model_dump()
+    await manager.broadcast(
+        f"board:{task.project_id}",
+        {"event": "task.moved", "data": task_data},
+    )
+    return envelope(task_data)
 
 
 @router.delete("/api/tasks/{task_id}")
@@ -111,6 +127,10 @@ async def archive(
     task = await update_task(db, task_id, is_archived=True)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
+    await manager.broadcast(
+        f"board:{task.project_id}",
+        {"event": "task.archived", "data": {"id": str(task_id)}},
+    )
     return envelope({"archived": True})
 
 

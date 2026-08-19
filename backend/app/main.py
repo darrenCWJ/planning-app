@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
 from app.modules.auth.router import router as auth_router
+from app.modules.boards.websocket import router as boards_ws_router
 from app.modules.projects.router import router as projects_router
 from app.modules.tasks.router import router as tasks_router
 from app.modules.workspaces.router import router as workspaces_router
@@ -21,6 +22,7 @@ app.include_router(auth_router)
 app.include_router(workspaces_router)
 app.include_router(projects_router)
 app.include_router(tasks_router)
+app.include_router(boards_ws_router)
 
 
 @app.get("/health")
