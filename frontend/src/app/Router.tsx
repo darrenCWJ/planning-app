@@ -1,17 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { LoginPage } from "../features/auth/pages/LoginPage";
 import { RegisterPage } from "../features/auth/pages/RegisterPage";
+import { WorkspaceListPage } from "../features/workspace/pages/WorkspaceListPage";
+import { WorkspaceDetailPage } from "../features/workspace/pages/WorkspaceDetailPage";
+import { BoardPage } from "../features/board/pages/BoardPage";
 import { ProtectedRoute } from "../components/shared/ProtectedRoute";
 import { Layout } from "../components/shared/Layout";
-
-function Dashboard() {
-  return (
-    <div className="p-8">
-      <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-      <p className="text-gray-500 mt-1 text-sm">Workspaces and boards coming next.</p>
-    </div>
-  );
-}
 
 export function AppRouter() {
   return (
@@ -24,7 +18,7 @@ export function AppRouter() {
           element={
             <ProtectedRoute>
               <Layout>
-                <Dashboard />
+                <WorkspaceListPage />
               </Layout>
             </ProtectedRoute>
           }
@@ -34,10 +28,17 @@ export function AppRouter() {
           element={
             <ProtectedRoute>
               <Layout>
-                <div className="p-8">
-                  <h1 className="text-xl font-semibold text-gray-900">Workspace</h1>
-                  <p className="text-gray-500 mt-1 text-sm">Coming in next task.</p>
-                </div>
+                <WorkspaceDetailPage />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/workspaces/:id/projects/:projectId/board"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <BoardPage />
               </Layout>
             </ProtectedRoute>
           }

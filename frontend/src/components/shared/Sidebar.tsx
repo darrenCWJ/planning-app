@@ -7,7 +7,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", to: "/" },
+  { label: "Workspaces", to: "/" },
 ];
 
 export function Sidebar() {
