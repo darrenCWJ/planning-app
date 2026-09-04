@@ -67,7 +67,7 @@ export async function fetchTask(taskId: string): Promise<TaskData> {
 
 export async function updateTask(
   taskId: string,
-  data: Partial<Pick<TaskData, "title" | "description" | "priority" | "due_date">>
+  data: Partial<Pick<TaskData, "title" | "description" | "priority" | "due_date" | "assignee_id">>
 ): Promise<TaskData> {
   const resp = await apiClient.patch(`/api/tasks/${taskId}`, data);
   return resp.data.data;
@@ -75,4 +75,61 @@ export async function updateTask(
 
 export async function deleteTask(taskId: string): Promise<void> {
   await apiClient.delete(`/api/tasks/${taskId}`);
+}
+
+export interface ColumnInput {
+  name: string;
+}
+
+export async function createColumn(
+  projectId: string,
+  data: ColumnInput
+): Promise<ColumnData> {
+  const resp = await apiClient.post(`/api/projects/${projectId}/columns`, data);
+  return resp.data.data;
+}
+
+export async function updateColumn(
+  columnId: string,
+  data: { name: string }
+): Promise<ColumnData> {
+  const resp = await apiClient.patch(`/api/columns/${columnId}`, data);
+  return resp.data.data;
+}
+
+export async function reorderColumns(
+  projectId: string,
+  columnIds: string[]
+): Promise<ColumnData[]> {
+  const resp = await apiClient.put(`/api/projects/${projectId}/columns/reorder`, {
+    column_ids: columnIds,
+  });
+  return resp.data.data;
+}
+
+export async function deleteColumn(columnId: string): Promise<void> {
+  await apiClient.delete(`/api/columns/${columnId}`);
+}
+
+export interface CommentData {
+  id: string;
+  task_id: string;
+  author_id: string;
+  content: string;
+  created_at: string;
+}
+
+export async function fetchComments(taskId: string): Promise<CommentData[]> {
+  const resp = await apiClient.get(`/api/tasks/${taskId}/comments`);
+  return resp.data.data;
+}
+
+export async function createComment(
+  taskId: string,
+  content: string
+): Promise<CommentData> {
+  const resp = await apiClient.post(`/api/tasks/${taskId}/comments`, {
+    content,
+  });
+  return resp.data.data;
 }

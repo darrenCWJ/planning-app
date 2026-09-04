@@ -19,7 +19,8 @@ export function CreateWorkspaceDialog({
     const trimmed = name.trim();
     if (trimmed.length === 0) return;
 
-    const workspace = await mutation.mutateAsync({ name: trimmed });
+    const slug = trimmed.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const workspace = await mutation.mutateAsync({ name: trimmed, slug });
     onCreated(workspace);
   };
 

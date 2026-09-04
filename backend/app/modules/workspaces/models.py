@@ -44,7 +44,8 @@ class WorkspaceMember(Base):
         UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE")
     )
     role: Mapped[WorkspaceRole] = mapped_column(
-        Enum(WorkspaceRole), default=WorkspaceRole.MEMBER
+        Enum(WorkspaceRole, values_callable=lambda e: [m.value for m in e]),
+        default=WorkspaceRole.MEMBER,
     )
     joined_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)

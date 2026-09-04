@@ -37,8 +37,10 @@ export function CreateProjectDialog({
     }
 
     try {
+      const key = trimmedName.toUpperCase().replace(/[^A-Z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 10);
       const project = await createMutation.mutateAsync({
         name: trimmedName,
+        key,
         description: description.trim() || undefined,
       });
       setName("");

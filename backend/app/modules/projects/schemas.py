@@ -15,6 +15,18 @@ class UpdateProjectRequest(BaseModel):
     description: str | None = None
 
 
+class CreateColumnRequest(BaseModel):
+    name: str
+
+
+class UpdateColumnRequest(BaseModel):
+    name: str | None = None
+
+
+class ReorderColumnsRequest(BaseModel):
+    column_ids: list[UUID]
+
+
 class ColumnResponse(BaseModel):
     id: UUID
     name: str

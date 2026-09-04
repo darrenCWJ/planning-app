@@ -78,4 +78,4 @@ async def get_members(
     db: AsyncSession = Depends(get_db),
 ):
     members = await list_members(db, workspace_id)
-    return envelope([WorkspaceMemberResponse.model_validate(m).model_dump() for m in members])
+    return envelope(members)

@@ -32,3 +32,18 @@ class TokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     user: UserResponse
+
+
+class UserProfileResponse(BaseModel):
+    id: UUID
+    email: str
+    full_name: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class UpdateProfileRequest(BaseModel):
+    full_name: str | None = None
+    current_password: str | None = None
+    new_password: str | None = None

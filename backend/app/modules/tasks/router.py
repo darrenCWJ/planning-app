@@ -1,6 +1,7 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
@@ -8,6 +9,8 @@ from app.core.dependencies import get_current_user_id
 from app.core.permissions import require_project_role
 from app.core.responses import envelope
 from app.core.websocket import manager
+from app.modules.mentions.service import process_mentions
+from app.modules.projects.models import Project
 from app.modules.tasks.schemas import (
     BoardResponse,
     CommentRequest,
@@ -145,6 +148,24 @@ async def create_comment(
     db: AsyncSession = Depends(get_db),
 ):
     comment = await add_comment(db, task_id, UUID(user_id), data.content)
+
+    task = await get_task(db, task_id)
+    if task:
+        project_result = await db.execute(
+            select(Project).where(Project.id == task.project_id)
+        )
+        project = project_result.scalar_one_or_none()
+        if project:
+            await process_mentions(
+                db,
+                content=data.content,
+                workspace_id=project.workspace_id,
+                task_id=task_id,
+                author_id=UUID(user_id),
+                task_title=task.title,
+                link=f"/board/{task.project_id}",
+            )
+
     return envelope(CommentResponse.model_validate(comment).model_dump())
 
 

@@ -3,22 +3,23 @@ import { apiClient } from "../../lib/api-client";
 export interface Workspace {
   id: string;
   name: string;
-  owner_id: string;
+  slug: string;
+  created_by: string;
   created_at: string;
-  updated_at: string;
 }
 
 export interface WorkspaceMember {
   id: string;
   user_id: string;
-  workspace_id: string;
   role: string;
+  joined_at: string;
   email: string;
   full_name: string;
 }
 
 export interface CreateWorkspaceInput {
   name: string;
+  slug: string;
 }
 
 export interface InviteMemberInput {
@@ -28,10 +29,12 @@ export interface InviteMemberInput {
 
 export interface WorkspaceProject {
   id: string;
-  name: string;
   workspace_id: string;
+  name: string;
+  key: string;
+  description: string;
+  is_archived: boolean;
   created_at: string;
-  updated_at: string;
 }
 
 export async function fetchWorkspaces(): Promise<Workspace[]> {

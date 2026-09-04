@@ -4,13 +4,15 @@ export interface Project {
   id: string;
   workspace_id: string;
   name: string;
+  key: string;
   description: string;
+  is_archived: boolean;
   created_at: string;
-  updated_at: string;
 }
 
 export interface CreateProjectInput {
   name: string;
+  key: string;
   description?: string;
 }
 

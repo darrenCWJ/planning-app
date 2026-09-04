@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useMatch } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 interface NavItem {
@@ -6,13 +6,35 @@ interface NavItem {
   to: string;
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { label: "Workspaces", to: "/" },
-];
-
 export function Sidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
+
+  const workspaceMatch = useMatch("/workspaces/:id/*");
+  const workspaceId = workspaceMatch?.params.id ?? null;
+  const calendarTo = workspaceId
+    ? `/workspaces/${workspaceId}/calendar`
+    : null;
+  const kbTo = workspaceId ? `/workspaces/${workspaceId}/kb` : null;
+  const webhooksTo = workspaceId
+    ? `/workspaces/${workspaceId}/settings/webhooks`
+    : null;
+
+  const projectMatch = useMatch("/workspaces/:id/projects/:projectId/*");
+  const projectId = projectMatch?.params.projectId ?? null;
+  const analyticsTo =
+    workspaceId && projectId
+      ? `/workspaces/${workspaceId}/projects/${projectId}/analytics`
+      : null;
+
+  const navItems: NavItem[] = [
+    { label: "Dashboard", to: "/dashboard" },
+    ...(calendarTo ? [{ label: "Calendar", to: calendarTo }] : []),
+    ...(kbTo ? [{ label: "Knowledge Base", to: kbTo }] : []),
+    ...(analyticsTo ? [{ label: "Analytics", to: analyticsTo }] : []),
+    ...(webhooksTo ? [{ label: "Webhooks", to: webhooksTo }] : []),
+    { label: "Workspaces", to: "/" },
+  ];
 
   return (
     <aside className="w-60 flex-shrink-0 bg-gray-900 text-gray-100 flex flex-col min-h-screen">
@@ -21,7 +43,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 px-2 py-4 space-y-1">
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const isActive = location.pathname === item.to;
           return (
             <Link
@@ -46,6 +68,16 @@ export function Sidebar() {
             <p className="text-xs text-gray-400 truncate">{user.email}</p>
           </div>
         )}
+        <Link
+          to="/profile"
+          className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors mb-2 ${
+            location.pathname === "/profile"
+              ? "bg-gray-700 text-white"
+              : "text-gray-300 hover:bg-gray-800 hover:text-white"
+          }`}
+        >
+          Profile
+        </Link>
         <button
           onClick={logout}
           className="w-full text-left text-sm text-gray-400 hover:text-gray-200 transition-colors"

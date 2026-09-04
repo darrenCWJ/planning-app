@@ -23,6 +23,16 @@ import app.modules.auth.models  # noqa: E402, F401
 import app.modules.workspaces.models  # noqa: E402, F401
 import app.modules.projects.models  # noqa: E402, F401
 import app.modules.tasks.models  # noqa: E402, F401
+import app.modules.subtasks.models  # noqa: E402, F401
+import app.modules.activity.models  # noqa: E402, F401
+import app.modules.notifications.models  # noqa: E402, F401
+import app.modules.kb.models  # noqa: E402, F401
+import app.modules.attachments.models  # noqa: E402, F401
+import app.modules.dependencies.models  # noqa: E402, F401
+import app.modules.timetracking.models  # noqa: E402, F401
+import app.modules.recurring.models  # noqa: E402, F401
+import app.modules.sprints.models  # noqa: E402, F401
+import app.modules.webhooks.models  # noqa: E402, F401
 
 # Override the sqlalchemy.url from settings (sync URL required for alembic)
 config.set_main_option("sqlalchemy.url", settings.database_url_sync)

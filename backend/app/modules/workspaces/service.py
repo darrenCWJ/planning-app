@@ -58,8 +58,21 @@ async def invite_member(
     return member
 
 
-async def list_members(db: AsyncSession, workspace_id: UUID) -> list[WorkspaceMember]:
+async def list_members(db: AsyncSession, workspace_id: UUID) -> list[dict]:
     result = await db.execute(
-        select(WorkspaceMember).where(WorkspaceMember.workspace_id == workspace_id)
+        select(WorkspaceMember, User.email, User.full_name)
+        .join(User, WorkspaceMember.user_id == User.id)
+        .where(WorkspaceMember.workspace_id == workspace_id)
     )
-    return list(result.scalars().all())
+    rows = result.all()
+    return [
+        {
+            "id": str(member.id),
+            "user_id": str(member.user_id),
+            "role": member.role.value,
+            "joined_at": member.joined_at.isoformat(),
+            "email": email,
+            "full_name": full_name,
+        }
+        for member, email, full_name in rows
+    ]

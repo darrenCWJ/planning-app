@@ -48,6 +48,10 @@ class Task(Base):
 
     comments: Mapped[list["Comment"]] = relationship(back_populates="task")
     labels: Mapped[list["TaskLabel"]] = relationship(back_populates="task")
+    subtasks: Mapped[list["Subtask"]] = relationship(
+        "Subtask", back_populates="task", cascade="all, delete-orphan",
+        order_by="Subtask.position",
+    )
 
 
 class Comment(Base):
